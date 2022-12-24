@@ -10,13 +10,15 @@
 
 1、实验数据：6个网络数据集；
 
-2、实验对比算法：Degree centrality (DC)、Coreness (KC)、Collective influence (CI)、H-index (HI)、Closeness centrality (CC)、Eigenvector centrality (EC)、Cycle ratio (CR)；
+2、实验对比算法：
+
+Degree centrality (DC)、Coreness (KC)、Collective influence (CI)、H-index (HI)、Closeness centrality (CC)、Eigenvector centrality (EC)、Cycle ratio (CR)；
 
 3、实验模型：SIR疾病传播模型。
 
 三、项目文件介绍
 
-1、data文件夹：data文件夹中放置了本项目所需要的所有实验数据，共包含6个网络的txt文本数据，6个网络分别涵盖生物、路由、航空、社交等网络类型，节点数量从200到7600不等；
+1、data文件夹：data文件夹中放置了本项目所需要的所有实验数据，共包含6个网络的txt文本数据（'Soc-hamsterster', 'Router','USA airports','Yeast','Lastfm_asia','Celegans'），6个网络分别涵盖生物、路由、航空、社交等网络类型，节点数量从200到7600不等；
 
 2、creat_network_by_txt.py：该文件运行后可以利用data文件夹中的txt文件生成后续项目所需要的网络图；
 
