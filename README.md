@@ -12,6 +12,7 @@
 
 2、实验对比算法：
 
+本项目选取了当前十分流行的7种算法作为对比算法，分别是：
 Degree centrality (DC)、Coreness (KC)、Collective influence (CI)、H-index (HI)、Closeness centrality (CC)、Eigenvector centrality (EC)、Cycle ratio (CR)；
 
 3、实验模型：SIR疾病传播模型。
