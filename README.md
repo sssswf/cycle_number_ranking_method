@@ -18,11 +18,11 @@ Degree centrality (DC)、Coreness (KC)、Collective influence (CI)、H-index (HI
 
 三、项目文件介绍
 
-1、data文件夹：data文件夹中放置了本项目所需要的所有实验数据，共包含6个网络的txt文本数据（'Soc-hamsterster', 'Router','USA airports','Yeast','Lastfm_asia','Celegans'），6个网络分别涵盖生物、路由、航空、社交等网络类型，节点数量从200到7600不等；
+1、data文件夹：data文件夹中放置了本项目所需要的所有实验数据，共包含6个网络的txt文本数据（'Soc-hamsterster'，'Router'，'USA airports'，'Yeast'，'Lastfm_asia'，'Celegans'），6个网络分别涵盖生物、路由、航空、社交等网络类型，节点数量从200到7600不等；
 
 2、creat_network_by_txt.py：该文件运行后可以利用data文件夹中的txt文件生成后续项目所需要的网络图；
 
-3、H-index_methods.py、collective_influence_methods.py：这两个文件分别实现了H-index (HI)和Collective influence (CI)算法，通过运行这两个文件，可以生成HI和CI的节点排序；
+3、H-index_methods.py、collective_influence_methods.py：这两个文件分别实现了H-index (HI) 和 Collective influence (CI)算法，通过运行这两个文件，可以生成HI和CI的节点排序；
 
 4、cycle_number_methoods.py：该文件实现了利用网络中的基本圈圈数进行节点排序的算法；
 
