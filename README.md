@@ -1,38 +1,39 @@
 # cycle_number_ranking_method
 
-从圈结构的视角研究复杂网络中的节点重要性排序
+A cost-effective approach to identify multiple influential spreaders based on cycle structure in networks
 
-一、项目背景
+1、Background
 
-节点重要性排序是当前复杂网络中十分火热的研究领域，而现存的方法，包括度中心性、K-core、H-index等都是通过链式或者星型结构来进行计算的，很少有人考虑到网络中的圈结构。因此，本项目从网络中的一类特殊圈——基本圈出发，通过计算节点的基本圈的数量，对网络中的节点按照基本圈数量的大小进行排序，并通过网络传播验证该方法的可行性。同时，本项目还能计算网络传播节点的代价，通过计算代价并对比传播能力，可以筛选出更理想的传播种子，同时也为其他节点重要性排序算法提供了一个验证算法优越性的方法。
+Node importance ranking is a very hot research field in complex network, and the existing methods, including degree centrality, K-core, H-index, etc., are calculated by chain or star structure, few scholars take into account the cycle structure in the network. Therefore, this project starts from a special kind of cycles in the network - basic cycles. By calculating the number of basic cycles of nodes, the nodes in the network are sorted according to the number of basic cycles, and the feasibility of this method is verified through network propagation. At the same time, this project can also calculate the cost of network propagation nodes. By calculating the cost and comparing the propagation ability, we can screen out more ideal propagation seeds, and also provide a method to verify the superiority of the algorithm for other node importance ranking algorithms.
   
-二、实验工具和方法概述
+2、Experimental tools and methods
 
-1、实验数据：6个网络数据集；
+（1）Data: we conduct experiments on six real networks, which are undirected and unweighted. C. elegans is a neural network of the Caenorhabditis elegans nematode, with nodes representing neurons and links representing synapses or gap junctions among two neurons. USA airports is a flight network among all commercial airports in the United States. The original network is directed, we simply transfer it into undirected in the analysis. Its nodes represent airports and a link between two nodes indicates that there exists an airline between the two airports. Yeast is a protein-protein interactions network in budding yeast. Soc-hamsterster is a friendship network from the Hamsterster website in which nodes represent users and links denote friend or family relationships. Asian-last.fm is a social network of Last.FM users, which was collected from the public API in March 2020. This network describes the mutual follower relationships between users from Asian countries. Router is a communication network, where nodes represent autonomous systems and a link connecting two nodes indicates that the two systems have traffic exchange.
 
-2、实验对比算法：
+（2）Benchmarks:
 
-本项目选取了当前十分流行的7种算法作为对比算法，分别是：
-Degree centrality (DC)、Coreness (KC)、Collective influence (CI)、H-index (HI)、Closeness centrality (CC)、Eigenvector centrality (EC)、Cycle ratio (CR)；
+We consider six common-used indicators with different mechanisms and a newly proposed cycle-based metric as benchmark indicators:
 
-3、实验模型：SIR疾病传播模型。
+Degree centrality (DC), Coreness (KC), Collective influence (CI), H-index (HI), Closeness centrality (CC), Eigenvector centrality (EC), Cycle ratio (CR).
 
-三、项目文件介绍
+（3）Network spreading model: SIR model。
 
-1、data文件夹：data文件夹中放置了本项目所需要的所有实验数据，共包含6个网络的txt文本数据（'Soc-hamsterster'，'Router'，'USA airports'，'Yeast'，'Lastfm_asia'，'Celegans'），6个网络分别涵盖生物、路由、航空、社交等网络类型，节点数量从200到7600不等；
+3、File introduction
 
-2、creat_network_by_txt.py：该文件运行后可以利用data文件夹中的txt文件生成后续项目所需要的网络图；
+（1）data: The data folder contains all the experimental data required for the project, including the txt data of six networks ('Soc-hamsterster','Router','USAairports','Yeast ','Lastfm_asia', 'C. elegans'). The six networks cover biological, routing, airline, social and other network types, with the number of nodes ranging from 200 to 7600.
 
-3、H-index_methods.py、collective_influence_methods.py：这两个文件分别实现了H-index (HI) 和 Collective influence (CI)算法，通过运行这两个文件，可以生成HI和CI的节点排序；
+（2）creat_network_by_txt.py: Run this file, the txt file in the data folder can be used to generate the network graph required by the project;
 
-4、cycle_number_methoods.py：该文件实现了利用网络中的基本圈圈数进行节点排序的算法；
+（3）H-index_methods.py, collective_influence_methods.py: These two files implement the H-index (HI) and Collective influence (CI) algorithms respectively. By running these two files, you can generate the node ranking of HI and CI；
 
-5、metheds_rank.py：该文件实现了除HI、CI的其他所有对比算法的节点排序，并且将所有算法的结果按照节点ID统一到了同一个文件中，方便后续网络传播实验；
+（4）cycle_number_methoods.py: This file implements the node ranking algorithm by using the number of basic cycles (NC) in the network；
 
-6、kendall.py：该文件用于计算各个指标在6个网络中计算出的节点排序的相关性；
+（5）metheds_rank.py: This file realizes the node ranking of all other comparison algorithms except HI and CI, and unifies the results of all algorithms into the same file according to the node ID, which is convenient for subsequent network propagation experiments；
 
-7、SIR_model.py：该文件实现了SIR疾病传播模型；
+（6）kendall.py: This file is used to calculate the kendall correlation of the node ranking of each indicator in the six networks；
 
-8、score_SIR.py：该文件通过利用metheds_rank.py将多个指标的前N个节点筛选出来，然后利用SIR_model.py进行SIR模型上的多源传播实验，其中前N个节点可以自定义，实验次数也可以自定义；
+（7）SIR_model.py: This file implements the SIR disease transmission model；
 
-9、cost.py：该文件用于计算节点筛选时所耗费的代价，通过综合考虑代价和传播能力，可以选出更理想的传播种子。
+（8）score_SIR.py: This file uses metheds_rank.py filters out the top-N nodes, and then uses SIR_model.py conducts multi-source propagation experiments on the SIR model. The top-N nodes and the number of experiments can be customized；
+
+（9）cost.py: This file is used to calculate the cost of node filtering. By comprehensively considering the cost and propagation ability, a more ideal set of propagation seeds can be selected.
