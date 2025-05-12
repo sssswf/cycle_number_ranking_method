@@ -2,42 +2,23 @@ import random
 import networkx as nx
 import numpy as np
 import pandas as pd
-import csv
-import time
-'''
-程序主要功能
-输入：网络图邻接矩阵，需要被设置为感染源的节点序列，感染率，免疫率，迭代次数step
-输出：被设置为感染源的节点序列的SIR感染情况---每次的迭代结果（I+R）/n
-'''
-def SIR_update_node_status(G, node, beta, gamma):
-    """
-    更新节点状态
-    :param G: 输入图
-    :param node: 节点序数
-    :param beta: 感染率
-    :param gamma: 免疫率
-    """
-    # 如果当前节点状态为 感染者(I) 有概率gamma变为 免疫者(R)
-    if G.nodes[node]['status'] == 'I':
-        p = random.random()
-        if p < gamma:
-            G.nodes[node]['status'] = 'R'
-    # 如果当前节点状态为 易感染者(S) 有概率beta变为 感染者(I)
-    if G.nodes[node]['status'] == 'S':
-        # 对该节点邻居节点进行遍历
-        for adj_node in G[node]:
-            # 邻居节点中存在 感染者(I)，该节点有概率转变为 感染者(I)
-            if G.nodes[adj_node]['status'] == 'I':
-                p = random.random()
-                if p < beta:
-                    G.nodes[node]['status'] = 'I'
-                    break
+import os
+import copy
+
+# 临界感染率
+def infected_beta(graph):
+    degree = nx.degree(graph)
+    degree_list = []
+    degree_sq_list = []
+    for i in degree:
+        degree_list.append(i[1])
+        degree_sq_list.append(i[1] * i[1])
+    degree_avg = np.mean(degree_list)
+    degree_avg_sq = np.mean(degree_sq_list)
+    infected = degree_avg / (degree_avg_sq - degree_avg)
+    return infected
+
 def count_node(G):
-    """
-    计算当前图内各个状态节点的数目
-    :param G: 输入图
-    :return: 各个状态（S、I、R）的节点数目
-    """
     s_num, i_num, r_num = 0, 0, 0
     for node in G:
         if G.nodes[node]['status'] == 'S':
@@ -48,32 +29,46 @@ def count_node(G):
             r_num += 1
     return s_num, i_num, r_num
 
-
-def SIR_network(graph, source, beta, gamma, step):
-    """
-    获得感染源的节点序列的SIR感染情况
-    :param graph: networkx创建的网络
-    :param source: 需要被设置为感染源的节点序列
-    :param beta: 感染率
-    :param gamma: 免疫率
-    :param step: 迭代次数
-    """
+def SIR_network(graph_, source, beta, gamma, step):
+    graph = copy.deepcopy(graph_)
     nodes_list = graph.nodes()  # 网络节点个数
-    n = len(nodes_list)
-    sir_values = []  # 存储每一次的感染节点数
-    # 初始化节点状态
     for i in nodes_list:
         graph.nodes[i]['status'] = 'S'  # 将所有节点的状态设置为 易感者（S）
-    # 若生成图G中的node编号（从0开始）与节点Id编号（从1开始）不一致，需要减1
     for j in source:
         graph.nodes[j]['status'] = 'I'  # 将感染源序列中的节点设置为感染源，状态设置为 感染者（I）
     # 记录初始状态
-    sir_values.append(len(source)/n)
-    for s in range(step):
-        # 针对对每个节点进行状态更新以完成本次迭代
+    sir_values = []  # 存储每一次的感染节点数
+    sir_values.append(len(source) / len(nodes_list))
+    for t in range(step):
+        # 记录当前时间步被感染的节点
+        newly_infected = []
+        # 记录当前时间步即将恢复的节点
+        newly_recovered = []
+        # 针对每个节点进行状态更新
         for node in nodes_list:
-            SIR_update_node_status(graph, node, beta, gamma)  # 针对node号节点进行SIR过程
-        s, i, r = count_node(graph)  # 得到本次迭代结束后各个状态（S、I、R）的节点数目
-        sir =  (r +i) / n  # 本次sir值为迭代结束后 (免疫节点数r+感染节点数)/总节点数n
-        sir_values.append(sir)  # 将本次迭代的sir值加入数组
+            if graph.nodes[node]['status'] == 'I':
+                for neighbor in list(graph.neighbors(node)):
+                    if graph.nodes[neighbor]['status'] == 'S' and random.random() < beta:
+                        newly_infected.append(neighbor)  # 记录被感染的节点
+                if random.random() < gamma:
+                    newly_recovered.append(node)  # 记录将要恢复的感染者
+        # 在下一时间步更新被感染的节点
+        for node in newly_infected:
+            graph.nodes[node]['status'] = 'I'
+        # 在下一时间步更新将要恢复的节点
+        for node in newly_recovered:
+            graph.nodes[node]['status'] = 'R'
+        # 统计当前状态下的S、I、R数量
+        s, i, r = count_node(graph)
+        sir = (r + i) / len(nodes_list)  # 计算当前时间步的SIR值
+        sir_values.append(sir)  # 将当前SIR值加入结果数组
     return sir_values
+
+def run_SIR_experiment(G, seed_nodes, beta, gamma, step, repeats):
+    """对指定种子节点进行SIR实验，重复多次，计算最终感染比例均值"""
+    results = []
+    for _ in range(repeats):
+        sir_values = SIR_network(G.copy(), seed_nodes, beta, gamma, step)
+        results.append(sir_values[-1])  # 记录最终感染比例
+
+    return np.mean(results)  # 计算均值
